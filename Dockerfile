@@ -3,7 +3,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt && useradd --create-home appuser
-COPY app.py design.py downloads.py lab_ui.py mentor.py roadmaps.py study_tools.py ./
+COPY app.py design.py downloads.py lab_ui.py mentor.py roadmaps.py study_tools.py backend.py cloud_state.py cloud_ui.py ./
 COPY .streamlit/config.toml .streamlit/config.toml
 USER appuser
 EXPOSE 8501

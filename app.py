@@ -8,12 +8,14 @@ from design import apply_design, sidebar_brand, dashboard_header, footer
 from study_tools import context_reply
 from lab_ui import init_lab, render_lab, scores_for, export_buttons
 from downloads import render_downloads
+from cloud_ui import account_panel, sync_progress
 
 st.set_page_config(page_title='StudyPath • Study + Career Mentor', page_icon='↗', layout='wide')
 apply_design()
 sidebar_brand()
+account_panel()
 init_lab()
-lang = st.sidebar.radio('Language / भाषा', ['English', 'हिन्दी'])
+lang = st.sidebar.radio('Language / भाषा', ['English', 'हिन्दी'], key='ui_language')
 hi = lang == 'हिन्दी'
 def t(en, hindi):
     return hindi if hi else en
@@ -23,8 +25,8 @@ def target_changed():
 target_exam = st.sidebar.selectbox(t('Study target', 'पढ़ाई का लक्ष्य'), [e['id'] for e in CATALOG], format_func=lambda k: next(e['title'] for e in CATALOG if e['id']==k), key='target_exam', on_change=target_changed)
 st.sidebar.caption(t('Anchors Study Lab tasks and new chat context. Starter topics only; not a full syllabus.', 'Study Lab के काम और नई chat context इस लक्ष्य से जुड़ते हैं। शुरुआती विषय, पूरा syllabus नहीं।'))
 dashboard_header(hi)
-st.sidebar.info(t('Offline prototype: transparent rules and curated career roadmaps, not a generative AI model. No API key needed.', 'ऑफ़लाइन प्रोटोटाइप: स्पष्ट नियम और तैयार करियर रोडमैप, जनरेटिव AI मॉडल नहीं। API key की ज़रूरत नहीं।'))
-st.sidebar.caption(t('Scores stay in this session. Do not enter personal details. Refreshing may reset your work.', 'अंक इसी सत्र में रहते हैं। निजी जानकारी न डालें। पेज रिफ्रेश करने पर काम रीसेट हो सकता है।'))
+st.sidebar.info(t('Rule-based mentor with curated roadmaps, not generative AI. Learning tools work offline; account storage uses InsForge.', 'नियम-आधारित मेंटर और तैयार रोडमैप; जनरेटिव AI नहीं। खाता स्टोरेज के लिए InsForge से कनेक्शन चाहिए।'))
+st.sidebar.caption(t('Guest work is session-only. Sign in to save progress and selected PDFs privately. After refresh, sign in again to restore. Chats are not saved.', 'Guest काम इसी सत्र में है। लॉग इन करके प्रगति और PDF निजी रूप से सेव करें। रिफ्रेश के बाद दोबारा लॉग इन करें। चैट सेव नहीं होती।'))
 if 'results' not in st.session_state:
     st.session_state.results = []
 if 'messages' not in st.session_state:
@@ -37,7 +39,7 @@ with tab1:
     if method == t('Enter marks', 'अंक डालें'):
         st.caption(t('Replace the sample marks with your own. Add or delete rows as needed.', 'उदाहरण के अंक अपने अंकों से बदलें। ज़रूरत पर पंक्तियाँ जोड़ें या हटाएँ।'))
         with st.form('marks'):
-            rows = st.data_editor([{'Topic': 'Algebra', 'Marks': 40.0, 'Maximum': 100.0}, {'Topic': 'Probability', 'Marks': 55.0, 'Maximum': 100.0}, {'Topic': 'Python', 'Marks': 80.0, 'Maximum': 100.0}], num_rows='dynamic', hide_index=True, use_container_width=True,
+            rows = st.data_editor([{'Topic': r.topic, 'Marks': float(r.marks), 'Maximum': float(r.total)} for r in st.session_state.results] or [{'Topic': 'Algebra', 'Marks': 40.0, 'Maximum': 100.0}, {'Topic': 'Probability', 'Marks': 55.0, 'Maximum': 100.0}, {'Topic': 'Python', 'Marks': 80.0, 'Maximum': 100.0}], num_rows='dynamic', hide_index=True, use_container_width=True,
                 column_config={'Topic': st.column_config.TextColumn(t('Topic', 'विषय'), required=True), 'Marks': st.column_config.NumberColumn(t('Marks', 'प्राप्त अंक'), min_value=0, required=True), 'Maximum': st.column_config.NumberColumn(t('Maximum', 'पूर्णांक'), min_value=1, required=True)})
             submit = st.form_submit_button(t('Analyze my marks', 'मेरे अंकों का विश्लेषण करें'), type='primary')
         if submit:
@@ -80,9 +82,9 @@ with tab2:
         st.info(t('Complete a marks assessment or quiz in step 1 first.', 'पहले चरण 1 में अंक डालें या प्रश्नोत्तरी पूरी करें।'))
     else:
         a, b = st.columns(2)
-        days = a.number_input(t('Days', 'दिन'), 1, 30, 7)
-        minutes = b.slider(t('Daily minutes (including breaks)', 'रोज़ के मिनट (ब्रेक सहित)'), 30, 360, 120, 15)
-        start = st.date_input(t('Start date', 'शुरुआत की तारीख'), value=date.today())
+        days = a.number_input(t('Days', 'दिन'), 1, 30, 7, key='regular_days')
+        minutes = b.slider(t('Daily minutes (including breaks)', 'रोज़ के मिनट (ब्रेक सहित)'), 30, 360, 120, 15, key='regular_minutes')
+        start = st.date_input(t('Start date', 'शुरुआत की तारीख'), value=date.today(), key='regular_start')
         st.caption(t('Lower scores receive more practice blocks. Each day fits your time budget, including short breaks. Times are relative to when you start studying.', 'कम अंक वाले विषयों को अधिक अभ्यास मिलता है। छोटे ब्रेक सहित रोज़ का प्लान तय समय में है। समय पढ़ाई शुरू करने के बाद के मिनट दर्शाता है।'))
         plan = make_plan(results, int(days), minutes)
         actions = [t('Review concepts + write a short summary', 'सिद्धांत दोहराएँ और संक्षिप्त नोट्स लिखें'), t('Solve practice questions + check mistakes', 'अभ्यास प्रश्न हल करें और गलतियाँ जाँचें'), t('Self-test without notes + review errors', 'बिना नोट्स टेस्ट दें और गलतियाँ सुधारें')]
@@ -152,4 +154,5 @@ with tab5:
 with tab6:
     render_downloads(target_exam, hi)
 
+sync_progress()
 footer(hi)
