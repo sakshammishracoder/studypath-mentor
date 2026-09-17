@@ -1,0 +1,33 @@
+
+# InsForge & AI agent skills
+.insforge
+.agent
+.agents
+.augment
+.claude
+.cline
+.github/copilot*
+.kilocode
+.qoder
+.qwen
+.roo
+.trae
+.windsurf
+
+# Runtime, credentials and local tooling
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+.cache/
+.local/
+.config/
+.fly/
+node_modules/
+*.zip
+*.pdf
+*.log
+AGENTS.md

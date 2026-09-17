@@ -1,0 +1,12 @@
+**
+!Dockerfile
+!requirements.txt
+!app.py
+!design.py
+!downloads.py
+!lab_ui.py
+!mentor.py
+!roadmaps.py
+!study_tools.py
+!.streamlit/
+!.streamlit/config.toml
