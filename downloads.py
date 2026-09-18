@@ -149,7 +149,7 @@ def report_pdf(exam,results,history,saved,completed):
 
 def render_downloads(exam,hi=False):
     def t(en,hindi):return hindi if hi else en
-    st.subheader(t('Your learning, ready to take with you','अपनी पढ़ाई की सामग्री साथ ले जाएँ'))
+    st.subheader(t('Download PDFs','PDF डाउनलोड करें'))
     st.caption(t('Download Centre · Reports, practice sheets and roadmaps','डाउनलोड सेंटर · रिपोर्ट, अभ्यास और रोडमैप'))
     st.info(t('PDFs are in English, even in Hindi mode. Non-Latin custom labels may be omitted. Downloads are generated from loaded progress. Signed-in users may also save a private cloud copy using the Save button. Official exam information remains the dated snapshot shown in each guide, not live updates.', 'हिंदी mode में भी PDF English में हैं। गैर-Latin custom labels हट सकते हैं। फ़ाइल loaded progress से बनती है। लॉग इन करके Save बटन से निजी cloud copy रख सकते हैं। परीक्षा सूचना हर guide में दी गई तारीख का snapshot है, live update नहीं।'))
     with st.container(border=True):

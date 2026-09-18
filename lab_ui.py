@@ -30,7 +30,7 @@ def export_buttons(tasks, start, clock, prefix):
 def render_lab(exam,hi=False):
     def t(en,hindi):return hindi if hi else en
     today=datetime.now(ZoneInfo('Asia/Kolkata')).date()
-    st.subheader(t('Small tasks. Visible progress.', 'छोटे काम। दिखती प्रगति।'))
+    st.subheader(t('Practice and revision', 'अभ्यास और दोहराई'))
     st.info(t('Anchored to your sidebar target. This offline starter pack covers only the concepts listed below—not the full syllabus. Class 12 and specialist families need your actual stream/post syllabus. Diagnostic scores are practice signals, not exam-readiness percentages.', 'साइडबार लक्ष्य से जुड़े शुरुआती concepts नीचे हैं, पूरा syllabus नहीं। कक्षा 12 और specialist समूहों के लिए अपना stream/post syllabus देखें। Diagnostic score अभ्यास का संकेत है, परीक्षा-readiness प्रतिशत नहीं।'))
     topic=st.selectbox(t('Focus concept','फ़ोकस concept'),ANCHORS[exam],format_func=lambda k:CONCEPTS[k][0],key='lab_topic_'+exam)
     if st.session_state.chat_topic is None:

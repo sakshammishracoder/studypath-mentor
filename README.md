@@ -101,3 +101,9 @@ python -m unittest discover -v
 | `Dockerfile`, `.dockerignore` | Non-root container with allowlisted build inputs |
 
 Keep `.streamlit/config.toml` when copying the project. Never commit `.insforge`, `.env`, `.streamlit/secrets.toml`, access tokens or test-account credentials.
+
+## Simple Streamlit interface
+
+The interface now uses only built-in Streamlit components: titles, tabs, forms, expanders and standard widgets. The custom gradient banner, floating cards and HTML/CSS styling were removed. The blue-and-white theme is configured in `.streamlit/config.toml`; learning and backend features are unchanged.
+
+For a beginner-friendly walkthrough, read [`docs/PYTHON_GUIDE.md`](docs/PYTHON_GUIDE.md). It explains widgets, session state, weakness detection, the timetable, downloads and where the more advanced managed backend fits in.
