@@ -20,3 +20,7 @@ npx @insforge/cli compute deploy . --name studypath-mentor --port 8501 --memory 
 ```
 
 Do not commit .insforge, authentication tokens, environment secrets or .streamlit/secrets.toml to a public repository.
+
+## Backend branch status
+
+The `feature/insforge-backend` branch adds optional persistent accounts and PDFs. The current InsForge project's additive schema migration and private bucket have been provisioned and tested. The public compute service has **not** been redeployed with this branch: the owner requested a pull request for review. After merging, deploy with `INSFORGE_BASE_URL` set to the project's public HTTPS origin. See `docs/BACKEND.md` for the reviewed command and validation scope.

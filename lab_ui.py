@@ -21,13 +21,16 @@ def export_buttons(tasks, start, clock, prefix):
     st.caption('Calendar uses Asia/Kolkata (IST). PDF and calendar task text are exported in English. Non-Latin custom topic names use a placeholder in PDF; calendar/CSV retain them. / PDF और कैलेंडर कार्य English में हैं।')
     one,two=st.columns(2)
     one.download_button('↓ Calendar · .ics',calendar_bytes(tasks,start,clock),file_name=f'{prefix}.ics',mime='text/calendar',key=prefix+'_ics')
-    two.download_button('↓ Printable plan · PDF',pdf_bytes(tasks,start),file_name=f'{prefix}.pdf',mime='application/pdf',key=prefix+'_pdf')
+    pdf = pdf_bytes(tasks,start)
+    two.download_button('↓ Printable plan · PDF',pdf,file_name=f'{prefix}.pdf',mime='application/pdf',key=prefix+'_pdf')
+    from cloud_ui import save_pdf_button
+    save_pdf_button(pdf, 'Study plan - ' + str(start), prefix)
 
 
 def render_lab(exam,hi=False):
     def t(en,hindi):return hindi if hi else en
     today=datetime.now(ZoneInfo('Asia/Kolkata')).date()
-    st.subheader(t('Small tasks. Visible progress.', 'छोटे काम। दिखती प्रगति।'))
+    st.subheader(t('Practice and revision', 'अभ्यास और दोहराई'))
     st.info(t('Anchored to your sidebar target. This offline starter pack covers only the concepts listed below—not the full syllabus. Class 12 and specialist families need your actual stream/post syllabus. Diagnostic scores are practice signals, not exam-readiness percentages.', 'साइडबार लक्ष्य से जुड़े शुरुआती concepts नीचे हैं, पूरा syllabus नहीं। कक्षा 12 और specialist समूहों के लिए अपना stream/post syllabus देखें। Diagnostic score अभ्यास का संकेत है, परीक्षा-readiness प्रतिशत नहीं।'))
     topic=st.selectbox(t('Focus concept','फ़ोकस concept'),ANCHORS[exam],format_func=lambda k:CONCEPTS[k][0],key='lab_topic_'+exam)
     if st.session_state.chat_topic is None:
@@ -45,7 +48,7 @@ def render_lab(exam,hi=False):
         if any(a is None for a in answers):st.warning(t('Answer all three first.','पहले तीनों उत्तर दें।'))
         else:
             score=round(100*sum(a==q[2] for a,q in zip(answers,bank))/len(bank),1)
-            st.session_state.diagnostic_history.append(dict(exam=exam,topic=topic,score=score,time=datetime.now(ZoneInfo('Asia/Kolkata')).strftime('%H:%M:%S')))
+            st.session_state.diagnostic_history.append(dict(exam=exam,topic=topic,score=score,time=datetime.now(ZoneInfo('Asia/Kolkata')).strftime('%Y-%m-%d %H:%M:%S')))
             for a,q in zip(answers,bank): st.write(('✓ ' if a==q[2] else '✗ ')+q[3])
             st.success(t('Attempt saved. Generate a new plan to use these scores.','प्रयास सेव हुआ। इन अंकों के लिए नया प्लान बनाएँ।'))
     history=[r for r in st.session_state.diagnostic_history if r['exam']==exam and r['topic']==topic]
@@ -53,7 +56,7 @@ def render_lab(exam,hi=False):
         c1,c2,c3=st.columns(3)
         c1.metric(t('Latest practice score','अंतिम अभ्यास स्कोर'),f"{history[-1]['score']}%")
         c2.metric(t('Change vs previous','पिछले से बदलाव'),f"{round(history[-1]['score']-history[-2]['score'],1):+g} pp" if len(history)>1 else '—')
-        c3.metric(t('Attempts this session','सत्र के प्रयास'),len(history))
+        c3.metric(t('Saved attempts','सेव प्रयास'),len(history))
         st.dataframe([{'Attempt':i+1,'Score %':r['score'],'Time (IST)':r['time']} for i,r in enumerate(history)],hide_index=True)
     st.divider()
     st.markdown('### '+t('🎯 Your micro-task planner','🎯 छोटे-छोटे कामों का प्लान'))

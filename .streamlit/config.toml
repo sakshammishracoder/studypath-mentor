@@ -1,9 +1,10 @@
+# Streamlit handles the styling. No custom HTML or CSS is needed.
 [theme]
 base = "light"
-primaryColor = "#7153d7"
-backgroundColor = "#f5f6fb"
-secondaryBackgroundColor = "#eeedf6"
-textColor = "#20243e"
+primaryColor = "#2563eb"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f0f2f6"
+textColor = "#262730"
 font = "sans serif"
 
 [browser]

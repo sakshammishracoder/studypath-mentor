@@ -10,3 +10,7 @@
 !study_tools.py
 !.streamlit/
 !.streamlit/config.toml
+
+!backend.py
+!cloud_state.py
+!cloud_ui.py
